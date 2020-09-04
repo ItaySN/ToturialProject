@@ -22,6 +22,21 @@ app.get('/info', (req, res) => {
 })
 
 //1 Get + 8 ! 
+app.get('/api/tutorials', async (req, res) => {
+  try {
+    if(req.query.title)
+    {
+      const tutorialsbyTitle = await Tutorial.find({ title: {$regex: `.*${req.query.title}*`}});
+      res.send(tutorialsbyTitle);
+    }
+    else{
+      const tutorials = await Tutorial.find({});
+      res.send(tutorials);
+    } 
+  } catch (err) {
+      res.status(400).send(err.message);
+  }
+});
 //2 Get
 app.get('/api/tutorials/:id', async (req, res) => {
     try {
@@ -31,6 +46,16 @@ app.get('/api/tutorials/:id', async (req, res) => {
         res.status(400).send(err.message);
     }
 });
+
+//7  get publishd tutorial
+app.get('/api/tutorials/published', async (req,res) => {
+  try{
+      const publishedTutorials = await Tutorial.find(published)
+      res.send(publishedTutorials);
+  }catch(err){
+      res.status(400).send(err.message);
+  }
+})
 
 //post 3
 app.post('/api/tutorials', (req, res) => {
@@ -55,5 +80,26 @@ app.put('/api/tutorials/:id', async (req, res) => {
       res.status(400).send(err.message);
   }
 })
+
+//deltet 5
+app.delete('/api/tutorials/:id', async (req, res) => {
+  try {
+      const result = await Tutorial.findByIdAndDelete({_id: req.params.id})
+      res.send(result);
+  }   catch (err) {
+      res.status(400).send(err.message);
+  }
+})
+
+//deltet 6
+app.delete('/api/tutorials', async (req, res) => {
+    try {
+      const result = await Tutorial.deleteMany({});
+      res.send(result);
+    } catch (err) {
+      res.status(400).send(err.message);
+    }
+});
+
 
 app.listen(3002);
